@@ -17,17 +17,43 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+Real-world music platforms like Spotify and YouTube use a combination of collaborative filtering (recommending songs that similar users enjoyed) and content-based filtering (matching songs to a user's taste based on audio features like genre, mood, and energy). At scale, these systems process millions of data points skips, replays, playlist adds to continuously refine predictions. My version is a simplified content-based recommender that prioritizes three core features: **genre**, **mood**, and **energy level**. It scores each song in a small catalog against a user's taste profile and returns the highest-scoring tracks, making its reasoning transparent and easy to trace.
 
-Some prompts to answer:
+**Song features used:**
+- `genre`, `mood`, `energy`, `tempo_bpm`, `valence`, `danceability`, `acousticness`
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+**UserProfile stores:**
+- `favorite_genre`, `favorite_mood`, `target_energy`, `likes_acoustic`
 
-You can include a simple diagram or bullet list if helpful.
+**Scoring logic (Algorithm Recipe):**
+- +2.0 points if the song's genre matches the user's favorite genre
+- +1.0 point if the song's mood matches the user's favorite mood
+- Up to +1.0 point based on energy similarity: `1 - abs(song_energy - target_energy)`
+- +0.5 points if the user likes acoustic songs and the song has high acousticness (> 0.6)
+- Maximum possible score: 4.5 points
+
+**How recommendations are chosen:**
+- Input: User preference dictionary (genre, mood, energy, likes_acoustic)
+- Process: Every song in the catalog is scored using the Algorithm Recipe above
+- Output: Songs sorted highest to lowest score — the top `k` results are returned
+
+**Known potential bias:**
+- Because genre is worth the most points (+2.0), songs that match the user's genre will almost always rank higher even if their mood or energy is a poor fit. This could create a "filter bubble" where the user only ever sees one genre dominating their recommendations.
+
+**Data Flow Diagram:**
+
+```mermaid
+flowchart TD
+    A[data/songs.csv] --> B[load_songs: Read all songs into a list]
+    B --> C[User Preference Profile\ngenre, mood, energy, likes_acoustic]
+    C --> D{For each song in catalog...}
+    D --> E[score_song: Apply Algorithm Recipe\n+2.0 genre match\n+1.0 mood match\n+0.0-1.0 energy similarity\n+0.5 acoustic bonus]
+    E --> F[Assign numeric score to song]
+    F --> D
+    D --> G[All songs scored]
+    G --> H[Sort songs highest score to lowest]
+    H --> I[Return Top K Recommendations\nwith score and reasons]
+```
 
 ---
 
@@ -63,6 +89,12 @@ pytest
 ```
 
 You can add more tests in `tests/test_recommender.py`.
+
+---
+
+## Terminal Output
+
+![Terminal Output](screenshots/terminal_output.png)
 
 ---
 
