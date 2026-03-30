@@ -38,12 +38,32 @@ class Recommender:
         self.songs = songs
 
     def recommend(self, user: UserProfile, k: int = 5) -> List[Song]:
-        # TODO: Implement recommendation logic
-        return self.songs[:k]
+        """Scores and ranks all songs for a user, returning the top k."""
+        def score(song: Song) -> float:
+            s = 0.0
+            if song.genre.lower() == user.favorite_genre.lower():
+                s += 2.0
+            if song.mood.lower() == user.favorite_mood.lower():
+                s += 1.0
+            s += 1 - abs(song.energy - user.target_energy)
+            if user.likes_acoustic and song.acousticness > 0.6:
+                s += 0.5
+            return s
+
+        return sorted(self.songs, key=score, reverse=True)[:k]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
-        # TODO: Implement explanation logic
-        return "Explanation placeholder"
+        """Returns a plain-language explanation of why a song was recommended."""
+        reasons = []
+        if song.genre.lower() == user.favorite_genre.lower():
+            reasons.append("genre match (+2.0)")
+        if song.mood.lower() == user.favorite_mood.lower():
+            reasons.append("mood match (+1.0)")
+        energy_sim = 1 - abs(song.energy - user.target_energy)
+        reasons.append(f"energy similarity (+{energy_sim:.2f})")
+        if user.likes_acoustic and song.acousticness > 0.6:
+            reasons.append("acoustic bonus (+0.5)")
+        return ", ".join(reasons)
 
 def load_songs(csv_path: str) -> List[Dict]:
     """Loads songs from a CSV file and returns a list of dictionaries."""
