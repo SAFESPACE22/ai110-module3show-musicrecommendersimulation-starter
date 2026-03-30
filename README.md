@@ -94,7 +94,20 @@ You can add more tests in `tests/test_recommender.py`.
 
 ## Terminal Output
 
+**Default Profile (Pop/Happy/0.8 Energy):**
+
 ![Terminal Output](screenshots/terminal_output.png)
+
+**Stress Test — 3 Diverse Profiles:**
+
+High-Energy Pop:
+![High-Energy Pop](screenshots/high_energy_pop.png)
+
+Chill Lofi:
+![Chill Lofi](screenshots/chill_lofi.png)
+
+Deep Intense Rock:
+![Deep Intense Rock](screenshots/deep_intense_rock.png)
 
 ---
 
@@ -128,10 +141,9 @@ Read and complete `model_card.md`:
 
 [**Model Card**](model_card.md)
 
-Write 1 to 2 paragraphs here about what you learned:
+My biggest learning moment during this project was understanding how to assign weighted scores to specific song attributes and use those scores to drive real recommendations. It made the concept of a recommender system feel concrete rather than abstract. Using AI tools helped guide me through the process step by step, though I found it important to double-check the AI along the way to make sure no steps were skipped. What surprised me most was how much a recommendation system can accomplish using just simple numerical values — the idea that a song's entire "vibe" can be captured and compared using a handful of decimals between 0.0 and 1.0 was unexpectedly powerful.
 
-- about how recommenders turn data into predictions
-- about where bias or unfairness could show up in systems like this
+Building this also made me realize how easily bias can creep into a system through weight choices alone. Because genre was worth the most points, it dominated every result — which mirrors how real platforms can create filter bubbles by over-prioritizing certain signals. If I were to extend this project, I would evolve it into a machine learning model that learns from user feedback over time rather than relying on manually assigned weights.
 
 
 ---
